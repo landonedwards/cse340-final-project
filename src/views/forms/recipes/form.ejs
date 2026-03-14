@@ -1,0 +1,47 @@
+<%- include('../../partials/header') %>
+<main>
+    <h1>Upload a New Recipe</h1>
+    <p>
+        Have a recipe you'd like to share with everyone? Fill out this form and upload it so others can enjoy! Your recipe
+        must be reviewed and approved by an admin before it is public. 
+    </p>
+
+    <form method="POST" action="/recipes" class="recipes-form">
+        <div class="form-group">
+            <label for="title">Recipe Title <span class="required-input">*</span></label>
+            <input type="text" id="title" name="title" placeholder="Dad's Hotdog Cereal w/ Relish!" minlength="3" required>
+        </div>
+
+        <div class="form-group">
+            <label for="categoryId">Category</label>
+            <select id="categoryId" name="categoryId">
+                <option value="">Select a category...</option>
+                <% if (locals.categories) { %>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category.id %>"><%= category.name %></option>
+                    <% }); %>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Short Description</label>
+            <textarea id="description" name="description" rows="3" placeholder="Tell us a little about this dish..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="ingredients">Ingredients<span class="required-input">*</span></label>
+            <p class="help-text">Please put each ingredient with its quantity on a new line.</p>
+            <textarea id="ingredients" name="ingredients" rows="8" placeholder="1 cup flour&#10;2 eggs&#10;1 tsp salt" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="instructions">Instructions <span class="required-input">*</span></label>
+            <p class="help-text">Please put each step on a new line (no need to number it).</p>
+            <textarea id="instructions" name="instructions" rows="8" placeholder="Preheat oven to 350 degrees.&#10;Mix dry ingredients in a bowl.&#10;Bake for 20 minutes." required></textarea>
+        </div>
+
+        <button type="submit">Upload Recipe</button>
+    </form>
+</main>
+<%- include('../../partials/footer') %>
