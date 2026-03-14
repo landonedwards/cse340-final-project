@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+<main>
+    <header class="recipe-header">
+        <h1><%= recipe.title %></h1>
+        <div class="recipe-metadata">
+            <p>Created by: <%= recipe.authorName %></p>
+            <p>Category: <% recipe.categoryName || 'Uncategorized' %></p>
+            <p>Uploaded: <%= new Date(recipe.createdAt).toLocaleDateString() %></p>
+        </div>
+
+        <div class="recipe-description">
+            <p><%= recipe.description %></p>
+        </div>
+    </header>
+
+    <hr>
+
+    <section class="recipe-ingredients">
+        <h2>Ingredients</h2>
+        <% if (ingredientsList.length > 0) { %>
+            <ul>
+                <% ingredientsList.forEach(ingredient => { %>
+                    <li><%= ingredient %></li>
+                <% }); %>
+            </ul>
+    </section>
+
+    <section class="recipe-instructions">
+        <h2>Instructions</h2>
+        <% if (instructionsList.length > 0) { %>
+            <ol>
+                <% instructionsList.forEach(instruction => { %>
+                    <li><%= instruction %></li>
+                <% }); %>
+            </ol>
+    </section>
+
+    <div class="navigation">
+        <p><a href="/recipes">&larr; Back to Recipe Catalog</a></p>
+    </div>
+</main>
+<%- include('../partials/footer') %>

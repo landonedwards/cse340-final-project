@@ -1,4 +1,4 @@
-import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe} from '../../models/recipe/recipe.js';
+import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe} from '../../models/recipes/recipes.js';
 
 // route handler for the recipe catalog list page
 const recipeListPage = async (req, res) => {
@@ -10,7 +10,7 @@ const recipeListPage = async (req, res) => {
         console.error('Error retrieving recipes:', error);
     }
 
-    res.render('recipe/list', {
+    res.render('recipes/list', {
         title: 'Recipe Catalog',
         recipes: recipes
     });
@@ -40,7 +40,7 @@ const recipeDetailPage = async (req, res, next) => {
     const ingredientsArray = recipe.ingredients.split('\n').filter(ingredient => ingredient.trim() !== '');
     const instructionsArray = recipe.instructions.split('\n').filter(instruction => instruction.trim() !== '');
 
-    res.render('recipe/detail', {
+    res.render('recipes/detail', {
         title: `${recipe.title} - ${recipe.authorName}`,
         recipe: recipe,
         ingredientsList: ingredientsArray,
