@@ -85,11 +85,15 @@ const handleRecipeSubmission = async (req, res) => {
     }
 
     // Extract validated data
-    const { categoryId, title, description, ingredients, instructions } = req.body;
+    const { title, description, ingredients, instructions } = req.body;
 
     // COME BACK AND FIX THIS
     // temporary hardcode for USER ID (will replace with req.session.userId)
     const userId = 1;
+
+    // MAY BE A TEMPORARY FIX
+    // if categoryId is an empty string, convert it to null for PostgreSQL
+    const categoryId = req.body.categoryId ? req.body.categoryId : null;
 
     try {
         // save to database

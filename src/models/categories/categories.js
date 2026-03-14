@@ -1,3 +1,5 @@
+import db from '../db.js';
+
 /**
  * Retrieves all categories from the database.
  * @returns {Promise<Array>} Array of category objects
