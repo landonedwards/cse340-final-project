@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     description TEXT,
     ingredients TEXT NOT NULL,
     instructions TEXT NOT NULL,
-    approval_status TEXT CHECK (approval_status IN ('Pending', 'Approved', 'Rejected')),
+    approval_status VARCHAR(20) DEFAULT 'Pending' CHECK (approval_status IN ('Pending', 'Approved', 'Rejected')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
