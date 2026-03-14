@@ -6,7 +6,7 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body class="<%= bodyClass || '' %>">
+<body class="<%= locals.bodyClass || '' %>">
     <header>
         <nav>
             <ul>
@@ -15,7 +15,7 @@
                 <li><a href="/recipe/list">Recipe Catalog</a></li>
     
                 <!-- only visible when logged in -->
-                <% if (isLoggedIn) { %>
+                <% if (locals.isLoggedIn) { %>
                     <!-- dashboard will contain additional links/actions based on your access level -->
                     <li><a href="/dashboard">Dashboard</a></li>
                     <li><a href="/recipe/upload">Submit Recipe</a></li>
@@ -23,7 +23,7 @@
                     <% } %>
     
                 <!-- only visible when NOT logged in -->
-                <% if (!isLoggedIn) { %>
+                <% if (!locals.isLoggedIn) { %>
                     <li><a href="/login">Login</a></li>
                     <li><a href="/register">Register</a></li>
                 <% } %>
@@ -31,19 +31,3 @@
         </nav>
     </header>
 
-<!-- <% 
-    const messages = flash();
-    const hasMessages = Object.values(messages).some(arr => arr.length > 0);
-%>
-
-<% if (hasMessages) { %>
-    <div class="flash-messages">
-        <% Object.keys(messages).forEach(type => { %>
-            <% messages[type].forEach(message => { %>
-                <div class="flash <%= type %>">
-                    <%= message %>
-                </div>
-            <% }); %>
-        <% }); %>
-    </div>
-<% } %> -->

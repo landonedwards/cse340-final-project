@@ -2,7 +2,8 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { setupDatabase, testConnection } from './src/models/setup';
+import routes from './src/controllers/routes.js';
+import { setupDatabase, testConnection } from './src/models/setup.js';
 
 // server configuration
 const __filename = fileURLToPath(import.meta.url);
@@ -33,7 +34,7 @@ app.set('views', path.join(__dirname, 'src/views'));
 // ...
 
 // routes
-// app.use('/', routes);
+app.use('/', routes);
 
 // error handling
 app.use((req, res, next) => {
@@ -44,6 +45,9 @@ app.use((req, res, next) => {
 
 // global error handler
 app.use((err, req, res, next) => {
+    // for testing (REMOVE LATER)
+    console.error("THE REAL ERROR IS", err.message);
+    
     // prevent infinite loops; if a response has already been sent, do nothing
     if (res.headersSent || res.finished) {
         return next(err);
@@ -51,11 +55,11 @@ app.use((err, req, res, next) => {
 
     // determine status and template
     const status = err.status || 500;
-    const template = status === 400 ? '404' : '500';
+    const template = status === 404 ? '404' : '500';
 
     // prepare data for the template
     const context = {
-        title: status === 400 ? 'Page Not Found' : 'Server Error',
+        title: status === 404 ? 'Page Not Found' : 'Server Error',
         // only reveal error details/message if we're in development
         error: NODE_ENV === 'production' ? 'An error occurred' : err.message,
         // only display the call stack before the program threw an error if we're in development
