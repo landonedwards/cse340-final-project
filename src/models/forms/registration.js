@@ -72,7 +72,7 @@ const getUserById = async (id) => {
  */
 const saveUser = async (username, email, hashedPassword) => {
     const query = `
-        INSERT INTO users (username, email, password)
+        INSERT INTO users (username, email, password_hash, role_id)
         VALUES (
             $1, 
             $2, 

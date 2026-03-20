@@ -39,8 +39,8 @@ const processLogin = async (req, res) => {
             return res.redirect('/login');
         }
 
-        // verify password using verifyPassword(password, user.password)
-        const passwordVerified = await verifyPassword(password, user.password);
+        // verify password using verifyPassword(password, user.password_hash)
+        const passwordVerified = await verifyPassword(password, user.password_hash);
         if (!passwordVerified) {
             // if password incorrect, log "Invalid password" and redirect to /login
             req.flash('error', 'Invalid email or password.');
@@ -48,7 +48,7 @@ const processLogin = async (req, res) => {
         }
 
         // SECURITY: Remove password from user object before storing in session
-        delete user.password;
+        delete user.password_hash;
 
         // Store user in session: req.session.user = user
         req.session.user = user;
@@ -118,11 +118,11 @@ const showDashboard = (req, res) => {
     // security check! Ensure user and sessionData do not contain password field
     if (user && user.password) {
         console.error('Security error: password found in user object');
-        delete user.password;
+        delete user.password_hash;
     }
     if (sessionData.user && sessionData.user.password) {
         console.error('Security error: password found in sessionData.user');
-        delete sessionData.user.password;
+        delete sessionData.user.password_hash;
     }
 
     // render the dashboard view (dashboard)
