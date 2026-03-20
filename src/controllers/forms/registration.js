@@ -80,7 +80,7 @@ const showAllUsers = async (req, res) => {
         // users remains empty array on error
     }
 
-    res.render('forms/registration/list', {
+    res.render('users/list', {
         title: 'Registered Users',
         users,
         user: req.session && req.session.user ? req.session.user : null
@@ -100,7 +100,7 @@ const showEditAccountForm = async (req, res) => {
 
         if (!targetUser) {
             req.flash('error', 'User not found.');
-            return res.redirect('/register/list');
+            return res.redirect('/users/list');
         }
 
         // check permissions: users can edit themselves, admins can edit anyone
@@ -108,17 +108,17 @@ const showEditAccountForm = async (req, res) => {
 
         if (!canEdit) {
             req.flash('error', 'You do not have permission to edit this account.');
-            return res.redirect('/register/list');
+            return res.redirect('/users/list');
         }
 
-        res.render('forms/registration/edit', {
+        res.render('users/edit', {
             title: 'Edit Account',
             user: targetUser
         });
     } catch (error) {
         console.error('Error retrieving user for edit', error);
         req.flash('error', 'An error occurred while retrieving user for edit. Please try again later.');
-        res.redirect('/register/list');
+        res.redirect('/users/list');
     }
 };
 
@@ -132,7 +132,7 @@ const processEditAccount = async (req, res) => {
         errors.array().forEach(error => {
             req.flash('error', error.msg);
         });
-        return res.redirect(`/register/${req.params.id}/edit`);
+        return res.redirect(`/users/${req.params.id}/edit`);
     }
 
     const targetUserId = parseInt(req.params.id);
@@ -144,7 +144,7 @@ const processEditAccount = async (req, res) => {
 
         if (!targetUser) {
             req.flash('error', 'User not found.');
-            return res.redirect('/register/list');
+            return res.redirect('/users/list');
         }
 
         // Check permissions
@@ -152,21 +152,21 @@ const processEditAccount = async (req, res) => {
 
         if (!canEdit) {
             req.flash('error', 'You do not have permission to edit this account.');
-            return res.redirect('/register/list');
+            return res.redirect('/users/list');
         }
 
         // check if new email already exists (and belongs to different user)
         const emailTaken = await emailExists(email);
         if (emailTaken && targetUser.email !== email) {
             req.flash('error', 'An account with this email already exists.');
-            return res.redirect(`/register/${targetUserId}/edit`);
+            return res.redirect(`/users/${targetUserId}/edit`);
         }
 
         // check if new username already exists (and belongs to different user)
         const usernameTaken = await usernameExists(username);
         if (usernameTaken && targetUser.username !== username) {
             req.flash('error', 'An account with this username already exists.');
-            return res.redirect(`/register/${targetUserId}/edit`);
+            return res.redirect(`/users/${targetUserId}/edit`);
         }
 
         // update the user
@@ -179,11 +179,11 @@ const processEditAccount = async (req, res) => {
         }
 
         req.flash('success', 'Account updated successfully.');
-        res.redirect('/register/list');
+        res.redirect('/users/list');
     } catch (error) {
         console.error('Error updating account:', error);
         req.flash('error', 'An error occurred while updating the account.');
-        res.redirect(`/register/${targetUserId}/edit`);
+        res.redirect(`/users/${targetUserId}/edit`);
     }
 };
 
@@ -198,13 +198,13 @@ const processDeleteAccount = async (req, res) => {
     // only admins can delete accounts
     if (currentUser.roleName !== 'admin') {
         req.flash('error', 'You do not have permission to delete accounts.');
-        return res.redirect('/register/list');
+        return res.redirect('/users/list');
     }
 
     // prevent admins from deleting their own account
     if (currentUser.id === targetUserId) {
         req.flash('error', 'You cannot delete your own account.');
-        return res.redirect('/register/list');
+        return res.redirect('/users/list');
     }
 
     try {
@@ -220,7 +220,7 @@ const processDeleteAccount = async (req, res) => {
         req.flash('error', 'An error occurred while deleting the account.');
     }
 
-    res.redirect('/register/list');
+    res.redirect('/users/list');
 };
 
 export {

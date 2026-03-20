@@ -19,18 +19,18 @@ router.post('/register', registrationValidation, processRegistration);
 
 // -- account management routes -- 
 
-// GET /register/list - Display all registered users
+// GET /users/list - Display all registered users
 // FIX THIS: may want to change hardcoded role name
-router.get('/register/list', requireRole('admin'), showAllUsers);
+router.get('/users/list', requireRole('admin'), showAllUsers);
 
-// GET /register/:id/edit - Display edit account form
-router.get('/register/:id/edit', requireLogin, showEditAccountForm);
+// GET /users/:id/edit - Display edit account form
+router.get('/users/:id/edit', requireLogin, showEditAccountForm);
 
-// POST /register/:id/edit - Process account edit
-router.post('/register/:id/edit', requireLogin, editValidation, processEditAccount);
+// POST /users/:id/edit - Process account edit
+router.post('/users/:id/edit', requireLogin, editValidation, processEditAccount);
 
-// POST /register/:id/delete - Delete user account
-router.post('/register/:id/delete', requireLogin, processDeleteAccount);
+// POST /users/:id/delete - Delete user account
+router.post('/users/:id/delete', requireLogin, processDeleteAccount);
 
 // -- login routes (form and submission) --
 
