@@ -142,8 +142,16 @@ const getRecipesByCategory = async (categoryId, sortBy = 'title') => {
  */
 const saveRecipe = async (userId, categoryId, title, description, ingredients, instructions) => {
     const query = `
-        INSERT INTO recipes (user_id, category_id, title, description, ingredients, instructions)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO recipes (user_id, category_id, title, description, ingredients, instructions, approval_status)
+        VALUES (
+            $1, 
+            $2, 
+            $3, 
+            $4, 
+            $5, 
+            $6,
+            'Pending'
+        )
         RETURNING id, title, approval_status, created_at
     `;
     const result = await db.query(query, [userId, categoryId, title, description, ingredients, instructions]);

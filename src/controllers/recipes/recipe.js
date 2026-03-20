@@ -87,11 +87,9 @@ const handleRecipeSubmission = async (req, res) => {
     // Extract validated data
     const { title, description, ingredients, instructions } = req.body;
 
-    // COME BACK AND FIX THIS
-    // temporary hardcode for USER ID (will replace with req.session.userId)
-    const userId = 1;
+    // grab logged-in user's ID
+    const userId = req.session.user.id;
 
-    // MAY BE A TEMPORARY FIX
     // if categoryId is an empty string, convert it to null for PostgreSQL
     const categoryId = req.body.categoryId ? req.body.categoryId : null;
 

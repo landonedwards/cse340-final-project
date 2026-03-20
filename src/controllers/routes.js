@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout } from './forms/login.js';
 import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage } from './recipes/recipe.js';
@@ -8,6 +9,11 @@ import { requireLogin, requireRole } from '../middleware/auth.js';
 
 // create a new router instance
 const router = Router();
+
+// -- static pages --
+
+// GET / - Display the home page
+router.get('/', homePage);
 
 // --- registration routes --- 
 
