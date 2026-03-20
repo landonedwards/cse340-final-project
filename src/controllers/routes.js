@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { showRegistrationForm, showEditAccountForm, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
+import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout } from './forms/login.js';
 import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage } from './recipes/recipe.js';
 import { recipeValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
