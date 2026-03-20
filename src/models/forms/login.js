@@ -2,12 +2,12 @@ import bcrypt from 'bcrypt';
 import db from '../db.js';
 
 /**
- * Find a user by email address for login verification.
+ * Find a user by either username or email address for login verification.
  * 
- * @param {string} email - Email address to search for
+ * @param {string} identifier - The username or email address to search for
  * @returns {Promise<Object|null>} User object with password hash or null if not found
  */
-const findUserByEmail = async (email) => {
+const findUserByUsernameOrEmail = async (identifier) => {
     const query = `
         SELECT 
             users.id, 
@@ -18,10 +18,10 @@ const findUserByEmail = async (email) => {
             roles.role_name AS "roleName"
         FROM users
         INNER JOIN roles ON users.role_id = roles.id
-        WHERE LOWER(users.email) = LOWER($1)
+        WHERE LOWER(users.username) = LOWER($1) OR LOWER(users.email) = LOWER($1)
         LIMIT 1
     `;
-    const result = await db.query(query, [email]);
+    const result = await db.query(query, [identifier]);
     return result.rows[0] || null;
 };
 
@@ -36,4 +36,4 @@ const verifyPassword = async (plainPassword, hashedPassword) => {
     return await bcrypt.compare(plainPassword, hashedPassword);
 };
 
-export { findUserByEmail, verifyPassword };
+export { findUserByUsernameOrEmail, verifyPassword };

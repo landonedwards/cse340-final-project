@@ -15,21 +15,17 @@ const emailExists = async (email) => {
 };
 
 /**
- * Saves a new user to the database with a hashed password.
+ * Checks if a username is already registered in the database.
  * 
- * @param {string} username - The user's username
- * @param {string} email - The user's email address
- * @param {string} hashedPassword - The bcrypt-hashed password
- * @returns {Promise<Object>} The newly created user record (without password)
+ * @param {string} username - The username to check
+ * @returns {Promise<boolean>} True if username exists, false otherwise
  */
-const saveUser = async (username, email, hashedPassword) => {
+const usernameExists = async (username) => {
     const query = `
-        INSERT INTO users (username, email, password)
-        VALUES ($1, $2, $3)
-        RETURNING id, username, email, created_at
+        SELECT EXISTS(SELECT 1 FROM users WHERE username = $1) as exists
     `;
-    const result = await db.query(query, [username, email, hashedPassword]);
-    return result.rows[0];
+    const result = await db.query(query, [username]);
+    return result.rows[0].exists;
 };
 
 /**
@@ -67,6 +63,30 @@ const getUserById = async (id) => {
 };
 
 /**
+ * Saves a new user to the database with a hashed password.
+ * 
+ * @param {string} username - The user's username
+ * @param {string} email - The user's email address
+ * @param {string} hashedPassword - The bcrypt-hashed password
+ * @returns {Promise<Object>} The newly created user record (without password)
+ */
+const saveUser = async (username, email, hashedPassword) => {
+    const query = `
+        INSERT INTO users (username, email, password)
+        VALUES (
+            $1, 
+            $2, 
+            $3,
+            -- dynamically grabs the correct role ID
+            (SELECT id FROM roles WHERE role_name = 'user')
+        )
+        RETURNING id, username, email, created_at
+    `;
+    const result = await db.query(query, [username, email, hashedPassword]);
+    return result.rows[0];
+};
+
+/**
  * Update a user's username and email
  */
 const updateUser = async (id, username, email) => {
@@ -89,7 +109,8 @@ const deleteUser = async (id) => {
     return result.rowCount > 0;
 };
 
-export { emailExists, 
+export { emailExists,
+         usernameExists, 
          saveUser, 
          getAllUsers,
          getUserById,
