@@ -1,15 +1,15 @@
 <%- include('../../partials/header') %>
 <main>
-    <h1><%= title %></h1>
+    <h1><%= locals.title %></h1>
     <p>
         Register for an account by providing your information below. All fields are required and passwords must meet security requirements.
     </p>
 
     <form method="POST" action="/register" class="registration-form">
-        <!-- Name field -->
+        <!-- Username field -->
         <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" placeholder="Bob Joe" minlength="2" required>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="DinkyChef72" minlength="3" required>
         </div>
 
         <!-- Email field -->
