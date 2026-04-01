@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 import validator from 'validator'; // for use on usernameOrEmail field (this is a library the express-validator uses)
 
-// validation rules for recipe creation
+// validation rules for recipe creation/editing
 const recipeValidation = [
     body('title')
         .trim()

@@ -90,6 +90,88 @@ const getAllRecipes = async (sortBy = 'category') => {
 };
 
 /**
+ * Retrieves all recipes for a given user.
+ * @param {string|number} userId - User ID 
+ * @param {string} sortBy - Sort order ('category', 'title', or 'newest')
+ * @returns {Promise<Array>} Array of recipe objects
+ */
+const getUserRecipes = async (userId, sortBy = 'category') => {
+    /**
+     * Build ORDER BY clause based on sortBy parameter.
+     */
+    const orderByClause = sortBy === 'title' ? 'r.title ASC' :
+                          sortBy === 'newest' ? 'r.created_at DESC' :
+                          'c.name ASC, r.title ASC'; // by default, sorts by category, then by title
+
+    /**
+     * JOIN with categories and users to get category/user name/username.
+     * Using table aliases (r for recipes, u for users, c for categories) keeps queries readable.
+     */
+    const query = `
+        SELECT r.id, r.user_id, r.category_id, r.title, r.description,
+               r.approval_status, r.created_at, c.name as category_name, u.username as author_name
+        FROM recipes r
+        LEFT JOIN categories c ON r.category_id = c.id
+        JOIN users u ON r.user_id = u.id
+        WHERE r.user_id = $1
+        ORDER BY ${orderByClause}
+    `;
+
+    const result = await db.query(query, [userId]);
+
+    return result.rows.map(recipe => ({
+        id: recipe.id,
+        userId: recipe.user_id,
+        categoryId: recipe.category_id,
+        title: recipe.title,
+        description: recipe.description,
+        approvalStatus: recipe.approval_status,
+        categoryName: recipe.category_name,
+        authorName: recipe.author_name,
+        createdAt: recipe.created_at
+    }));
+};
+
+/**
+ * Retrieves all recipes with a 'Pending' status for admin moderation.
+ * @returns {Promise<Array>} Array of pending recipe objects
+ */
+const getPendingRecipes = async () => {
+    const query = `
+        SELECT 
+            r.id, 
+            r.user_id,
+            r.category_id
+            r.title, 
+            r.description, 
+            r.approval_status,
+            r.created_at,
+            u.username AS "author_name",
+            c.name AS "category_name"
+        FROM recipes r
+        JOIN users u ON r.user_id = u.id
+        LEFT JOIN categories c ON r.category_id = c.id
+        WHERE r.approval_status = 'Pending'
+        -- order by oldest first, so admins review the ones that have been waiting longest 
+        ORDER BY r.created_at ASC 
+    `;
+
+    const result = await db.query(query);
+
+    return result.rows.map(recipe => ({
+        id: recipe.id,
+        userId: recipe.user_id,
+        categoryId: recipe.category_id,
+        title: recipe.title,
+        description: recipe.description,
+        approvalStatus: recipe.approval_status,
+        categoryName: recipe.category_name,
+        authorName: recipe.author_name,
+        createdAt: recipe.created_at
+    }));
+};
+
+/**
  * Get all approved recipes in a specific category.
  * * @param {number} categoryId - The ID of the category
  * @param {string} sortBy - Sort option: 'title' (default), 'username', 'recent'
@@ -201,6 +283,8 @@ const deleteRecipe = async (id) => {
 
 export { getRecipe, 
          getAllRecipes, 
+         getUserRecipes,
+         getPendingRecipes,
          getRecipesByCategory,
          saveRecipe,
          updateRecipe,

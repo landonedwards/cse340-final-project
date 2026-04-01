@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout } from './forms/login.js';
-import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage } from './recipes/recipe.js';
+import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit } from './recipes/recipe.js';
 import { recipeValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
 import { requireLogin, requireRole } from '../middleware/auth.js';
@@ -62,5 +62,14 @@ router.post('/recipes/upload', requireLogin, recipeValidation, handleRecipeSubmi
 
 // GET /recipes/:recipeId - Display recipe detail page 
 router.get('/recipes/:recipeId', recipeDetailPage);
+
+// GET /forms/recipes/:recipeId/edit - Display recipe edit form
+router.get('/recipes/:recipeId/edit', requireLogin, showEditRecipeForm);
+
+// POST /forms/recipes/:recipeId/edit - Handles changes made to an existing recipe with validation
+router.post('/recipes/:recipeId/edit', requireLogin, recipeValidation, handleRecipeEdit);
+
+// GET /recipes/manage - Display user's submitted recipes (basic user)/recipes awaiting approval (admin)
+router.get('/recipes/manage', requireLogin, recipeManagePage);
 
 export default router;

@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<main>
+    <div class="dashboard">
+        <h1>Welcome to Your Dashboard, <%= user.username %></h1>
+
+        <div class="user-info">
+            <h2>Your Account Information</h2>
+            <div class="user-detail">
+                <span class="label">Username:</span>
+                <span class="value"> <%= user.username %></span>
+
+                <br>
+
+                <span class="label">Email:</span>
+                <span class="value"> <%= user.email %></span>
+                <div class="user-detail">
+                    <span class="label">Role:</span>
+                    <span class="value"><%= user.roleName %></span>
+                </div>
+                <p> Account created <%= new Date(user.created_at).toLocaleDateString() %></p>
+            </div>
+        </div>
+
+        <div class="dashboard-actions">
+            <a href="/users/list">Manage Accounts</a>
+            <a href="/logout" class="logout-button">Logout</a>
+        </div>
+    </div>
+</main>
+<%- include('partials/footer') %>
