@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout, showDashboard } from './forms/login.js';
-import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe } from './recipes/recipe.js';
+import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe, processReviewSubmission } from './recipes/recipe.js';
 import { recipeValidation, reviewValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
 import { requireLogin, requireRole } from '../middleware/auth.js';
@@ -90,6 +90,6 @@ router.post('/recipes/:recipeId/reviews', requireLogin, reviewValidation, proces
 // NEED TO IMPLEMENT THIS CONTROLLER FUNCTION (and /edit)
 
 // POST /reviews/:reviewId/delete - Delete comment
-router.post('/reviews/:reviewId/delete', requireLogin, /*processDeleteReview*/);
+// router.post('/reviews/:reviewId/delete', requireLogin, /*processDeleteReview*/);
 
 export default router;
