@@ -37,6 +37,14 @@ CREATE TABLE IF NOT EXISTS recipes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- recipe history table 
+CREATE TABLE IF NOT EXISTS recipe_status_history (
+    id SERIAL PRIMARY KEY,
+    recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
+    status VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
 -- recipe images table (one to many relationship)
 CREATE TABLE IF NOT EXISTS recipe_images (
     id SERIAL PRIMARY KEY,

@@ -1,5 +1,34 @@
 import db from '../db.js';
 
+/**
+ * Helper function to log a status change to the recipe's history table
+ */
+const logRecipeHistory = async (recipeId, status) => {
+    const query = `
+    INSERT INTO recipe_status_history (recipeId, status)
+    VALUES ($1, $2)
+    `;
+    const result = await db.query(query, [recipeId, status]);
+    return result.rows[0];
+}
+
+/**
+ * Retrieves the status history timeline for a specific recipe.
+ * @param {number|string} recipeId 
+ * @returns {Promise<Array>} Array of history records
+ */
+const getRecipeHistory = async (recipeId) => {
+    const query = `
+    SELECT status, created_at AS "createdAt"
+    FROM recipe_status_history
+    WHERE recipe_id = $1
+    ORDER BY created_at DESC
+    `;
+
+    const result = await db.query(query, [recipeId]);
+    return result.rows;
+}
+
 // retrieve recipe functions
 
 /**
@@ -237,6 +266,10 @@ const saveRecipe = async (userId, categoryId, title, description, ingredients, i
         RETURNING id, title, approval_status, created_at
     `;
     const result = await db.query(query, [userId, categoryId, title, description, ingredients, instructions]);
+    const newRecipeId = result.rows[0].id;
+
+    // update status history table
+    await logRecipeHistory(newRecipeId, 'Pending');
     return result.rows[0];
 };
 
@@ -259,12 +292,16 @@ const updateRecipe = async (recipeId, categoryId, title, description, ingredient
             description = $3, 
             ingredients = $4, 
             instructions = $5,
+            -- anytime changes are made to a recipe, it will automatically be set back to 'Pending'
             approval_status = 'Pending' 
         WHERE id = $6
         RETURNING id, title, approval_status
     `;
     
     const result = await db.query(query, [categoryId, title, description, ingredients, instructions, recipeId]);
+
+    // track status change in history table
+    await logRecipeHistory(recipeId, 'Pending');
     return result.rows[0] || null;
 };
 
@@ -293,6 +330,9 @@ const updateRecipeStatus = async (id, status) => {
         WHERE id = $1`;
     
     const result = await db.query(query, [id, status]);
+
+    // update status history table
+    await logRecipeHistory(id, status);
     return result.rowCount > 0;
 };
 
