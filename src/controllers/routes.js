@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout } from './forms/login.js';
-import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit } from './recipes/recipe.js';
+import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe } from './recipes/recipe.js';
 import { recipeValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
 import { requireLogin, requireRole } from '../middleware/auth.js';
@@ -60,6 +60,9 @@ router.get('/recipes/upload', requireLogin, showRecipeForm);
 // POST /recipes/upload - Handles recipes form submission with validation
 router.post('/recipes/upload', requireLogin, recipeValidation, handleRecipeSubmission);
 
+// GET /recipes/manage - Display user's submitted recipes (basic user)/recipes awaiting approval (admin)
+router.get('/recipes/manage', requireLogin, recipeManagePage);
+
 // GET /recipes/:recipeId - Display recipe detail page 
 router.get('/recipes/:recipeId', recipeDetailPage);
 
@@ -69,7 +72,13 @@ router.get('/recipes/:recipeId/edit', requireLogin, showEditRecipeForm);
 // POST /forms/recipes/:recipeId/edit - Handles changes made to an existing recipe with validation
 router.post('/recipes/:recipeId/edit', requireLogin, recipeValidation, handleRecipeEdit);
 
-// GET /recipes/manage - Display user's submitted recipes (basic user)/recipes awaiting approval (admin)
-router.get('/recipes/manage', requireLogin, recipeManagePage);
+// POST /forms/recipes/:recipeId/delete - Delete recipe
+router.post('/recipes/:recipeId/delete', requireLogin, processDeleteRecipe);
+
+// POST /recipes/:recipeId/approve - Set approval status to 'Approved'
+router.post('/recipes/:recipeId/approve', requireRole('admin'), processApproveRecipe);
+
+// POST /recipes/:recipeId/reject - Set approval status to 'Rejected'
+router.post('/recipes/:recipeId/reject', requireRole('admin'), processRejectRecipe);
 
 export default router;

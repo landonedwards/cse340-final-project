@@ -1,4 +1,4 @@
-import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, getPendingRecipes, getUserRecipes} from '../../models/recipes/recipes.js';
+import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes} from '../../models/recipes/recipes.js';
 import { getAllCategories } from '../../models/categories/categories.js';
 import { validationResult } from 'express-validator';
 
@@ -193,10 +193,119 @@ const handleRecipeEdit = async (req, res) => {
     }
 }
 
+const processDeleteRecipe = async (req, res) => {
+    // extract recipe ID from route parameter
+    const recipeId = parseInt(req.params.recipeId);
+
+    // confirm recipe with that ID exists 
+    const targetRecipe = await getRecipe(recipeId);
+    if (Object.keys(targetRecipe).length === 0) {
+        req.flash('error', 'Recipe not found.');
+        return res.redirect('/recipes/manage');
+    }
+
+    const currentUser = req.session.user;
+    // check whether user is the author or an admin
+    const canDelete = currentUser.id === targetRecipe.userId || currentUser.roleName === 'admin';
+
+    if (!canDelete) {
+        req.flash('error', 'You do not have permission to delete this recipe.');
+        return res.redirect('/recipes/manage');
+    }
+
+    try {
+        const deleted = await deleteRecipe(recipeId);
+
+        if (deleted) {
+            req.flash('success', 'Recipe deleted successfully.');
+        } else {
+            req.flash('error', 'Recipe not found or already deleted.');
+        }
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
+        req.flash('error', 'An error occurred while deleting the recipe.');
+    }
+
+    res.redirect('/recipes/manage');
+};
+
+const processApproveRecipe = async (req, res) => {
+    const recipeId = parseInt(req.params.recipeId); 
+
+    // confirm recipe with that ID exists 
+    const targetRecipe = await getRecipe(recipeId);
+    if (Object.keys(targetRecipe).length === 0) {
+        req.flash('error', 'Recipe not found.');
+        return res.redirect('/recipes/manage');
+    }
+
+    const currentUser = req.session.user;
+    const isAdmin = currentUser.roleName === 'admin';
+
+    if (!isAdmin) {
+        req.flash('error', 'You do not have permission to approve this recipe.');
+        return res.redirect('/recipes/manage');
+    }
+
+    try {
+        const approved = await updateRecipeStatus(recipeId, 'Approved');
+
+        if (approved) {
+            req.flash('success', 'Approved recipe and sent to the public catalog!');
+        } else {
+            req.flash('error', 'Recipe not found or other error occurred.');
+        }
+        return res.redirect('/recipes/manage');
+
+    } catch (error) {
+        console.error('Error approving recipe:', error);
+        req.flash('error', 'An error occurred while approving the recipe.');
+        return res.redirect('/recipes/manage');
+    }
+}
+
+const processRejectRecipe = async (req, res) => {
+    const recipeId = parseInt(req.params.recipeId); 
+
+    // confirm recipe with that ID exists 
+    const targetRecipe = await getRecipe(recipeId);
+    if (Object.keys(targetRecipe).length === 0) {
+        req.flash('error', 'Recipe not found.');
+        return res.redirect('/recipes/manage');
+    }
+
+    const currentUser = req.session.user;
+    const isAdmin = currentUser.roleName === 'admin';
+
+    if (!isAdmin) {
+        req.flash('error', 'You do not have permission to reject this recipe.');
+        return res.redirect('/recipes/manage');
+    }
+
+    try {
+        const rejected = await updateRecipeStatus(recipeId, 'Rejected');
+
+        if (rejected) {
+            req.flash('success', 'Successfully rejected recipe!');
+        } else {
+            req.flash('error', 'Recipe not found or other error occurred.');
+        }
+        return res.redirect('/recipes/manage');
+
+    } catch (error) {
+        console.error('Error rejecting recipe:', error);
+        req.flash('error', 'An error occurred while rejecting the recipe.');
+        return res.redirect('/recipes/manage');
+    }
+}
+
 export { recipeListPage, 
          recipeDetailPage, 
          recipeManagePage,
          showRecipeForm, 
          showEditRecipeForm,
          handleRecipeSubmission,
-         handleRecipeEdit };
+         handleRecipeEdit,
+         processApproveRecipe,
+         processRejectRecipe,
+         processDeleteRecipe };

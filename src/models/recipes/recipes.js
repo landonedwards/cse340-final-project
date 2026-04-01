@@ -281,6 +281,21 @@ const deleteRecipe = async (id) => {
     return result.rowCount > 0;
 };
 
+/**
+ * Sets recipe's status to 'Approved'.
+ * @param {number} id - The ID of the recipe to approve
+ * @param {string} status - The new status ('Approved', 'Rejected', etc.)
+ */
+const updateRecipeStatus = async (id, status) => {
+    const query = `
+        UPDATE recipes
+        SET approval_status = $2 
+        WHERE id = $1`;
+    
+    const result = await db.query(query, [id, status]);
+    return result.rowCount > 0;
+};
+
 export { getRecipe, 
          getAllRecipes, 
          getUserRecipes,
@@ -288,4 +303,5 @@ export { getRecipe,
          getRecipesByCategory,
          saveRecipe,
          updateRecipe,
-         deleteRecipe };
+         deleteRecipe,
+         updateRecipeStatus };
