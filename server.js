@@ -33,7 +33,8 @@ app.use(session({
             // Configure SSL for session store connection (required by BYU-I databases)
             ssl: {
                 ca: caCert,
-                rejectUnauthorized: true,
+                // TEMPORARY FIX TO GET IT TO DEPLOY ON RENDER (should be set to true)
+                rejectUnauthorized: false,
                 checkServerIdentity: () => { return undefined; }
             }
         },
