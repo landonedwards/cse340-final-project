@@ -61,8 +61,8 @@ app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
-// global middleware
-// ...
+// global middleware (sets res.locals variables)
+app.use(addLocalVariables);
 
 // flash message middleware (must come after session and global middleware)
 app.use(flash);

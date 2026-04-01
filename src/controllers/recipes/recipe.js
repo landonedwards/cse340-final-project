@@ -1,4 +1,5 @@
 import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes} from '../../models/recipes/recipes.js';
+import { getReviewsByRecipe, saveReview } from '../../models/reviews/reviews.js';
 import { getAllCategories } from '../../models/categories/categories.js';
 import { validationResult } from 'express-validator';
 
@@ -31,6 +32,9 @@ const recipeDetailPage = async (req, res, next) => {
     const ingredientsArray = recipe.ingredients.split('\n').filter(ingredient => ingredient.trim() !== '');
     const instructionsArray = recipe.instructions.split('\n').filter(instruction => instruction.trim() !== '');
 
+    // grab the reviews for this specific recipe
+    const reviews = await getReviewsByRecipe(recipeId);
+
     // if there is a user session, grab user object
     const currentUser = req.session ? req.session.user : null;
     // make sure there is a user stored in session and they are either the author or an admin
@@ -41,7 +45,9 @@ const recipeDetailPage = async (req, res, next) => {
         recipe: recipe,
         ingredientsList: ingredientsArray,
         instructionsList: instructionsArray,
-        canModify: canModify
+        canModify: canModify,
+        reviews: reviews,
+        user: currentUser
     });
 };
 
@@ -314,6 +320,46 @@ const processRejectRecipe = async (req, res) => {
     }
 }
 
+const processReviewSubmission = async (req, res) => {
+    const recipeId = parseInt(req.params.recipeId);
+     // check for validation errors
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        // store each validation error as a separate flash message
+        errors.array().forEach(error => {
+            req.flash('error', error.msg);
+        });
+        // redirect back to form without saving
+        return res.redirect(`/recipes/${recipeId}`);
+    }
+
+    // confirm recipe with that ID exists 
+    const targetRecipe = await getRecipe(recipeId);
+    if (Object.keys(targetRecipe).length === 0) {
+        req.flash('error', 'Recipe not found.');
+        return res.redirect('/recipes/manage');
+    }
+
+    // Extract validated data
+    const { rating, comment } = req.body;
+
+    // grab logged-in user's ID
+    const userId = req.session.user.id;
+
+    try {
+        // save to database
+        await saveReview(userId, recipeId, rating, comment);
+        // after successfully saving to the database
+        req.flash('success', 'Success! Your comment was posted!');
+    } catch (error) {
+        console.error('Error uploading review:', error);
+        req.flash('error', 'Unable to upload your comment. Please try again later.');
+    }
+
+    res.redirect(`/recipes/${recipeId}`);
+};
+
 export { recipeListPage, 
          recipeDetailPage, 
          recipeManagePage,
@@ -323,4 +369,5 @@ export { recipeListPage,
          handleRecipeEdit,
          processApproveRecipe,
          processRejectRecipe,
-         processDeleteRecipe };
+         processDeleteRecipe,
+         processReviewSubmission };

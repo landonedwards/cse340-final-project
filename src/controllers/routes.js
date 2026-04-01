@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
-import { showLoginForm, processLogin, processLogout } from './forms/login.js';
+import { showLoginForm, processLogin, processLogout, showDashboard } from './forms/login.js';
 import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe } from './recipes/recipe.js';
-import { recipeValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
+import { recipeValidation, reviewValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
 import { requireLogin, requireRole } from '../middleware/auth.js';
 
@@ -49,6 +49,9 @@ router.post('/login', loginValidation, processLogin);
 // GET /logout - Handle logout 
 router.get('/logout', processLogout);
 
+// GET /dashboard - Display user's dashboard
+router.get('/dashboard', requireLogin, showDashboard);
+
 // --- recipe routes --- 
 
 // GET /recipes - Display the general recipe catalog page
@@ -80,5 +83,13 @@ router.post('/recipes/:recipeId/approve', requireRole('admin'), processApproveRe
 
 // POST /recipes/:recipeId/reject - Set approval status to 'Rejected'
 router.post('/recipes/:recipeId/reject', requireRole('admin'), processRejectRecipe);
+
+// POST /recipes/:recipeId/reviews - Handles review upload with validation 
+router.post('/recipes/:recipeId/reviews', requireLogin, reviewValidation, processReviewSubmission);
+
+// NEED TO IMPLEMENT THIS CONTROLLER FUNCTION (and /edit)
+
+// POST /reviews/:reviewId/delete - Delete comment
+router.post('/reviews/:reviewId/delete', requireLogin, /*processDeleteReview*/);
 
 export default router;

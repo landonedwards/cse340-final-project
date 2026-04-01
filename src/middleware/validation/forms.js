@@ -51,6 +51,20 @@ const recipeValidation = [
         })
 ];
 
+const reviewValidation = [
+    body('rating')
+        // skips validation if no rating has been selected
+        .optional({ checkFalsy: true })
+        .isInt({ min: 1, max: 5})
+        .withMessage('Please select a valid rating between 1 and 5.'),
+    body('comment')
+        .trim()
+        .isLength({ min: 3, max: 1000 })
+        .withMessage('Comment must be between 3 and 1000 characters.')
+        // converts HTML tags into safe string characters to prevent XSS attacks
+        .escape()
+];
+
 // validation rules for user registration
 const registrationValidation = [
     body('username')
@@ -130,6 +144,7 @@ const loginValidation = [
 ];
 
 export { recipeValidation,
+         reviewValidation,
          registrationValidation,
          editValidation,
          loginValidation

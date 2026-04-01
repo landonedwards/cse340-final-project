@@ -5,7 +5,7 @@ import db from '../db.js';
  */
 const logRecipeHistory = async (recipeId, status) => {
     const query = `
-    INSERT INTO recipe_status_history (recipeId, status)
+    INSERT INTO recipe_status_history (recipe_id, status)
     VALUES ($1, $2)
     `;
     const result = await db.query(query, [recipeId, status]);

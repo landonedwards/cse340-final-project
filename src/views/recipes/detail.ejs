@@ -1,4 +1,5 @@
 <%- include('../partials/header') %>
+
 <main>
     <header class="recipe-header">
         <h1><%= recipe.title %></h1>
@@ -47,8 +48,66 @@
         </div>
     <% } %>
 
+    <section class="recipe-reviews">
+        <h2>Reviews</h2>
+
+        <% if (locals.isLoggedIn) { %>
+            <form method="POST" action="/recipes/<%= recipe.id %>/reviews">
+                <div class="form-group">
+                    <label for="rating">Rating</label>
+                    <select id="rating" name="rating">
+                        <option value="" disabled selected>Choose a rating...</option>
+                        <option value="5">★★★★★ (5/5)</option>
+                        <option value="4">★★★★☆ (4/5)</option>
+                        <option value="3">★★★☆☆ (3/5)</option>
+                        <option value="2">★★☆☆☆ (2/5)</option>
+                        <option value="1">★☆☆☆☆ (1/5)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">Comment<span class="required-input">*</span></label>
+                    <textarea id="comment" name="comment" rows="8" minlength="3" maxlength="1000" placeholder="This just barely edges the Sahara Desert out in terms of moisture." required></textarea>
+                </div>
+
+                <button type="submit">Post Comment</button>
+            </form>
+        <% } else { %>
+            <p>Please <a href="/login">log in</a> or <a href="/register">register</a> to leave a review!</p>
+        <% } %>
+
+        <% if (reviews.length > 0) { %>
+            <ul>
+                <% reviews.forEach(review => { %>
+                    <li>
+                        <div class="review-header">
+                            <span class="review-author"><%= review.authorName %></span>
+                            <span class="review-date"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+                        </div>
+                        <span class="star-rating"><%= '★'.repeat(review.rating) %><%= '☆'.repeat(5 - review.rating) %></span>
+                        <p class="review-comment"><%= review.comment %></p>
+
+                        <% if (locals.isLoggedIn && (user.id === review.userId || user.roleName === 'admin')) { %>
+                            <div class="review-actions">
+                                <!--THIS LIKELY WON'T BE ITS OWN VIEW; WILL NEED TO CHANGE ROUTE-->
+                                <a href="/reviews/<%= review.id %>/edit">Edit</a>
+
+                                <form method="POST" action="/reviews/<%= review.id %>/delete" style="display: inline;">
+                                    <button type="submit" onclick="return confirm('Are you sure you want to permanently delete this review?')">Delete</button>
+                                </form>
+                            </div>
+                        <% } %>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No reviews yet. Be the first to leave one!</p>
+        <% } %>
+    </section>
+
     <div class="navigation">
         <p><a href="/recipes">&larr; Back to Recipe Catalog</a></p>
     </div>
 </main>
+
 <%- include('../partials/footer') %>
