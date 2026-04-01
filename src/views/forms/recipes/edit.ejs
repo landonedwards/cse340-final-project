@@ -1,1 +1,52 @@
-// placeholder
+<%- include('../../partials/header') %>
+
+<main>
+    <h1>Edit Recipe</h1>
+    <p>
+        Need to make a change to your recipe? Use the forms below to modify your recipe's details. Any changes pushed will
+        be subject to review by an admin and cause your recipe to be taken off of the public catalog until it is approved again.
+    </p>
+
+    <form method="POST" action="/recipes/<%= recipe.id %>/edit" class="recipes-form">
+        <div class="form-group">
+            <label for="title">Recipe Title <span class="required-input">*</span></label>
+            <input type="text" id="title" name="title" value="<%= recipe.title %>" minlength="3" required>
+        </div>
+
+        <div class="form-group">
+            <label for="categoryId">Category</label>
+            <select id="categoryId" name="categoryId">
+                <option value="">Select a category...</option>
+                <% if (locals.categories) { %>
+                    <% categories.forEach(category => { %>
+                        <!-- make the dropdown auto-fill with recipe's existing category (if applicable) -->
+                        <option value="<%= category.id %>" <%= recipe.categoryId === category.id ? 'selected' : '' %>>
+                            <%= category.name %>
+                        </option>
+                    <% }); %>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Short Description</label>
+            <textarea id="description" name="description" rows="3"><%= recipe.description %></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="ingredients">Ingredients<span class="required-input">*</span></label>
+            <p class="help-text">Please put each ingredient with its quantity on a new line.</p>
+            <textarea id="ingredients" name="ingredients" rows="8" required><%= recipe.ingredients %></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="instructions">Instructions <span class="required-input">*</span></label>
+            <p class="help-text">Please put each step on a new line (no need to number it).</p>
+            <textarea id="instructions" name="instructions" rows="8" required><%= recipe.instructions %></textarea>
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
+</main>
+
+<%- include('../../partials/footer') %>

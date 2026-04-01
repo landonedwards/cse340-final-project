@@ -141,7 +141,7 @@ const getPendingRecipes = async () => {
         SELECT 
             r.id, 
             r.user_id,
-            r.category_id
+            r.category_id,
             r.title, 
             r.description, 
             r.approval_status,

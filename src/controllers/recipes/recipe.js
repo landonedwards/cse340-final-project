@@ -31,11 +31,17 @@ const recipeDetailPage = async (req, res, next) => {
     const ingredientsArray = recipe.ingredients.split('\n').filter(ingredient => ingredient.trim() !== '');
     const instructionsArray = recipe.instructions.split('\n').filter(instruction => instruction.trim() !== '');
 
+    // if there is a user session, grab user object
+    const currentUser = req.session ? req.session.user : null;
+    // make sure there is a user stored in session and they are either the author or an admin
+    const canModify = currentUser && (currentUser.id === recipe.userId || currentUser.roleName === 'admin');
+
     res.render('recipes/detail', {
         title: `${recipe.title} - ${recipe.authorName}`,
         recipe: recipe,
         ingredientsList: ingredientsArray,
-        instructionsList: instructionsArray
+        instructionsList: instructionsArray,
+        canModify: canModify
     });
 };
 
@@ -197,11 +203,20 @@ const processDeleteRecipe = async (req, res) => {
     // extract recipe ID from route parameter
     const recipeId = parseInt(req.params.recipeId);
 
+    // grab the URL the user was just on; defaults to /recipes (catalog view) if unavailable
+    let prevURL = req.get('Referrer') || '/recipes';
+
+    // if user deletes recipe on its detail page, redirect them to the main catalog
+    // view because the old link is dead
+    if (prevURL.includes(`/recipes/${recipeId}`)) {
+        prevURL = '/recipes';
+    }
+
     // confirm recipe with that ID exists 
     const targetRecipe = await getRecipe(recipeId);
     if (Object.keys(targetRecipe).length === 0) {
         req.flash('error', 'Recipe not found.');
-        return res.redirect('/recipes/manage');
+        return res.redirect(prevURL);
     }
 
     const currentUser = req.session.user;
@@ -210,7 +225,7 @@ const processDeleteRecipe = async (req, res) => {
 
     if (!canDelete) {
         req.flash('error', 'You do not have permission to delete this recipe.');
-        return res.redirect('/recipes/manage');
+        return res.redirect(prevURL);
     }
 
     try {
@@ -226,7 +241,7 @@ const processDeleteRecipe = async (req, res) => {
         req.flash('error', 'An error occurred while deleting the recipe.');
     }
 
-    res.redirect('/recipes/manage');
+    res.redirect(prevURL);
 };
 
 const processApproveRecipe = async (req, res) => {

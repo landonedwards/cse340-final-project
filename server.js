@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { addLocalVariables } from './src/middleware/global.js';
 import routes from './src/controllers/routes.js';
 import flash from './src/middleware/flash.js';
 import { setupDatabase, testConnection } from './src/models/setup.js';
