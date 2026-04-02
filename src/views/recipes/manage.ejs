@@ -2,7 +2,7 @@
 
 <main>
     <h1><%= title %></h1>
-    <% if (res.locals.isStaff) { %>
+    <% if (locals.isStaff) { %>
         <p>
            View all of the recipes that have been submitted by users and are awaiting approval. Approve one to send it to
            the public catalog, or reject it and notify the user. 
@@ -46,7 +46,7 @@
                 <div class="recipe-card">
                     <h3><a href="/recipes/<%= recipe.id %>"><%= recipe.title %></a></h3>
                     <p class="recipe-metadata">
-                        <%= recipe.authorName %> | Uploaded <%= new Date(recipe.createdAt).toLocaleDateString() %>
+                        <%= recipe.authorName %> | Uploaded <%= new Date(recipe.createdAt).toLocaleDateString() %> | <%= recipe.approvalStatus %>
                     </p>
                     <p class="recipe-description"><%= recipe.description %></p>
 

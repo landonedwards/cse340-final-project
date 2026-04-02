@@ -50,7 +50,8 @@ const handleReviewEdit = async (req, res) => {
     // confirm review with that ID exists 
     if (Object.keys(targetReview).length === 0) {
         req.flash('error', 'Review not found.');
-        return res.redirect(`/recipes/${targetReview.recipeId}`);
+        // redirect to public catalog. Can't redirect to recipe detail page because targetReview (including recipeId) is null/empty
+        return res.redirect(`/recipes`);
     }
 
     // check for validation errors
@@ -99,7 +100,7 @@ const processDeleteReview = async (req, res) => {
     const targetReview = await getReview(reviewId);
     if (Object.keys(targetReview).length === 0) {
         req.flash('error', 'Review not found.');
-        return res.redirect(`/recipes/${targetReview.recipeId}`);
+        return res.redirect(`/recipes`);
     }
 
     const currentUser = req.session.user;

@@ -22,7 +22,7 @@ const emailExists = async (email) => {
  */
 const usernameExists = async (username) => {
     const query = `
-        SELECT EXISTS(SELECT 1 FROM users WHERE username = $1) as exists
+        SELECT EXISTS(SELECT 1 FROM users WHERE LOWER(username) = LOWER($1)) as exists
     `;
     const result = await db.query(query, [username]);
     return result.rows[0].exists;
@@ -37,6 +37,7 @@ const getAllUsers = async () => {
     const query = `
         SELECT id, username, email, created_at, role_name AS "roleName"
         FROM users
+        INNER JOIN roles ON users.role_id = roles.id
         ORDER BY created_at DESC
     `;
     const result = await db.query(query);

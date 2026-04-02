@@ -1,4 +1,4 @@
-import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes} from '../../models/recipes/recipes.js';
+import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes, getRecipeHistory } from '../../models/recipes/recipes.js';
 import { getReviewsByRecipe } from '../../models/reviews/reviews.js';
 import { getAllCategories } from '../../models/categories/categories.js';
 import { validationResult } from 'express-validator';
@@ -64,12 +64,42 @@ const recipeManagePage = async (req, res) => {
     }
 
     res.render('recipes/manage', {
-        title: isAdmin ? 'Pending Recipe Queue' : 'Manage My Recipes',
+        title: isStaff ? 'Pending Recipe Queue' : 'Manage My Recipes',
         recipes: recipes,
         // passes empty array if not admin/moderator
         pendingRecipes: pendingRecipes,
     });
 };
+
+const showRecipeHistory = async (req, res, next) => {
+    const recipeId = req.params.recipeId;
+    const recipe = await getRecipe(recipeId); 
+    
+    // check that recipe with that ID exists
+    if (Object.keys(recipe).length === 0) {
+        const err = new Error(`Recipe ${recipeId} not found`);
+        err.status = 404;
+        return next(err);
+    }
+
+    const currentUser = req.session.user;
+    const canView = currentUser && (currentUser.id === recipe.userId ||
+                                    currentUser.roleName === 'admin' ||
+                                    currentUser.roleName === 'moderator');
+
+    if (!canView) {
+        req.flash('error', 'You do not have permission to view this recipe\'s history.');
+        return res.redirect(`recipes/${recipeId}`);
+    }
+
+    const history = await getRecipeHistory(recipeId);
+
+    res.render('recipes/history', {
+        title: 'Recipe Status History',
+        recipe: recipe,
+        history: history
+    });
+}
 
 // route handler to show recipe form
 const showRecipeForm = async (req, res) => {
@@ -326,4 +356,5 @@ export { recipeListPage,
          handleRecipeEdit,
          processApproveRecipe,
          processRejectRecipe,
-         processDeleteRecipe };
+         processDeleteRecipe,
+         showRecipeHistory };

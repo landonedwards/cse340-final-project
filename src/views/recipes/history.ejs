@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+    <h2>Status log for: <%= recipe.title %></h2>
+
+    <% if (history && history.length > 0) { %>
+        <div class="history-timeline">
+            <% history.forEach(statusChange => { %>
+                <div class="status-change">
+                    <p><%= statusChange.status %></p>
+                    <p class="date">Recorded on: <%= new Date(statusChange.createdAt).toLocaleDateString() %></p>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p>No status history has been recorded for this recipe yet...</p>
+    <% } %>
+
+    <a href="/recipes/<%= recipe.id %>">Back to Recipe</a>
+</main>
+
+<%- include('../partials/footer') %>

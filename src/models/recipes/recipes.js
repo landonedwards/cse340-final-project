@@ -344,4 +344,5 @@ export { getRecipe,
          saveRecipe,
          updateRecipe,
          deleteRecipe,
-         updateRecipeStatus };
+         updateRecipeStatus,
+         getRecipeHistory };

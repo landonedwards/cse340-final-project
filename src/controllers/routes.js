@@ -2,11 +2,11 @@ import { Router } from 'express';
 import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout, showDashboard } from './forms/login.js';
-import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe } from './recipes/recipe.js';
+import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe, showRecipeHistory } from './recipes/recipe.js';
 import { processDeleteReview, handleReviewEdit, processReviewSubmission } from './reviews/review.js';
 import { recipeValidation, reviewValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
-import { requireLogin, requireRole } from '../middleware/auth.js';
+import { requireLogin, requireRoles } from '../middleware/auth.js';
 
 // create a new router instance
 const router = Router();
@@ -16,6 +16,7 @@ const router = Router();
 // GET / - Display the home page
 router.get('/', homePage);
 
+
 // --- registration routes --- 
 
 // GET /register - Display the registration form
@@ -24,10 +25,11 @@ router.get('/register', showRegistrationForm);
 // POST /register - Handle registration form submission with validation
 router.post('/register', registrationValidation, processRegistration);
 
+
 // -- account management routes -- 
 
 // GET /users/list - Display all registered users
-router.get('/users/list', requireRole('admin'), showAllUsers);
+router.get('/users/list', requireRoles('admin'), showAllUsers);
 
 // GET /users/:id/edit - Display edit account form
 router.get('/users/:id/edit', requireLogin, showEditAccountForm);
@@ -37,6 +39,7 @@ router.post('/users/:id/edit', requireLogin, editValidation, processEditAccount)
 
 // POST /users/:id/delete - Delete user account
 router.post('/users/:id/delete', requireLogin, processDeleteAccount);
+
 
 // -- login routes (form and submission) --
 
@@ -51,6 +54,7 @@ router.get('/logout', processLogout);
 
 // GET /dashboard - Display user's dashboard
 router.get('/dashboard', requireLogin, showDashboard);
+
 
 // --- recipe routes --- 
 
@@ -69,6 +73,9 @@ router.get('/recipes/manage', requireLogin, recipeManagePage);
 // GET /recipes/:recipeId - Display recipe detail page 
 router.get('/recipes/:recipeId', recipeDetailPage);
 
+// GET /recipes/:recipeId/history - Display recipe's status history
+router.get('/recipes/:recipeId/history', requireLogin, showRecipeHistory);
+
 // GET /forms/recipes/:recipeId/edit - Display recipe edit form
 router.get('/recipes/:recipeId/edit', requireLogin, showEditRecipeForm);
 
@@ -79,10 +86,11 @@ router.post('/recipes/:recipeId/edit', requireLogin, recipeValidation, handleRec
 router.post('/recipes/:recipeId/delete', requireLogin, processDeleteRecipe);
 
 // POST /recipes/:recipeId/approve - Set approval status to 'Approved'
-router.post('/recipes/:recipeId/approve', requireRole('admin', 'moderator'), processApproveRecipe);
+router.post('/recipes/:recipeId/approve', requireRoles('admin', 'moderator'), processApproveRecipe);
 
 // POST /recipes/:recipeId/reject - Set approval status to 'Rejected'
-router.post('/recipes/:recipeId/reject', requireRole('admin', 'moderator'), processRejectRecipe);
+router.post('/recipes/:recipeId/reject', requireRoles('admin', 'moderator'), processRejectRecipe);
+
 
 // -- review routes --
 
