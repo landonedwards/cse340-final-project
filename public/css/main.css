@@ -1,0 +1,10 @@
+header {
+    background-color: #696d7d;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+    justify-content: space-around;
+    width: 100%;
+}

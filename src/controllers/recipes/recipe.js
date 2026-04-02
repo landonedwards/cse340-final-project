@@ -1,4 +1,4 @@
-import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes, getRecipeHistory } from '../../models/recipes/recipes.js';
+import { getRecipe, getAllRecipes, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes, getRecipeHistory } from '../../models/recipes/recipes.js';
 import { getReviewsByRecipe } from '../../models/reviews/reviews.js';
 import { getAllCategories } from '../../models/categories/categories.js';
 import { validationResult } from 'express-validator';
@@ -89,7 +89,7 @@ const showRecipeHistory = async (req, res, next) => {
 
     if (!canView) {
         req.flash('error', 'You do not have permission to view this recipe\'s history.');
-        return res.redirect(`recipes/${recipeId}`);
+        return res.redirect(`/recipes/${recipeId}`);
     }
 
     const history = await getRecipeHistory(recipeId);

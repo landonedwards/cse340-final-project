@@ -7,7 +7,9 @@
             <p>Created by: <%= recipe.authorName %></p>
             <p>Category: <%= recipe.categoryName || 'Uncategorized' %></p>
             <p>Uploaded: <%= new Date(recipe.createdAt).toLocaleDateString() %></p>
-            <p>Status: <%= recipe.approvalStatus %> | <a href="/recipes/<%= recipe.id %>/history">History</a></p>
+            <% if (locals.isLoggedIn && (user.id === recipe.userId || locals.isStaff)) { %>
+                <p>Status: <%= recipe.approvalStatus %> | <a href="/recipes/<%= recipe.id %>/history">History</a></p>
+            <% } %>
         </div>
 
         <div class="recipe-description">

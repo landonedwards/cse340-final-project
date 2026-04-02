@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <link rel="stylesheet" href="/css/main.css">
+    <% if (NODE_ENV.includes('dev')) { %>
+        <script>
+            // Get the current hostname and port from the browser
+            const host = window.location.hostname;
+            const currentPort = window.location.port;
+
+            // Calculate WebSocket port (current port + 1)
+            const wsPort = currentPort ? (parseInt(currentPort) + 1) : 3001;
+
+            // Create WebSocket connection using dynamic hostname and port
+            const ws = new WebSocket(`ws://${host}:${wsPort}`);
+            ws.onclose = () => {
+                setTimeout(() => location.reload(), 2000);
+            };
+        </script>
+    <% } %>
 </head>
 <body class="<%= locals.bodyClass || '' %>">
     <header>
@@ -16,9 +32,9 @@
     
                 <!-- only visible when logged in -->
                 <% if (locals.isLoggedIn) { %>
+                    <li><a href="/recipes/upload">Submit Recipe</a></li>
                     <!-- dashboard will contain additional links/actions based on your access level -->
                     <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/recipes/upload">Submit Recipe</a></li>
                     <li><a href="/logout">Logout</a></li>
                     <% } %>
     

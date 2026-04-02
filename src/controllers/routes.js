@@ -11,6 +11,36 @@ import { requireLogin, requireRoles } from '../middleware/auth.js';
 // create a new router instance
 const router = Router();
 
+// add review-specific styles to all review routes
+router.use('/reviews', (req, res, next) => {
+    res.addStyle('<link rel="stylesheet" href="/css/review.css">');
+    next();
+});
+
+// add recipe-specific styles to all faculty routes
+router.use('/recipes', (req, res, next) => {
+    res.addStyle('<link rel="stylesheet" href="/css/recipes.css">');
+    next();
+});
+
+// add user-specific styles to all users routes
+router.use('/users', (req, res, next) => {
+    res.addStyle('<link rel="stylesheet" href="/css/users.css">');
+    next();
+});
+
+// add registration-specific styles to all registration routes
+router.use('/register', (req, res, next) => {
+    res.addStyle('<link rel="stylesheet" href="/css/registration.css">');
+    next();
+});
+
+// add login-specific styles to all login routes
+router.use('/login', (req, res, next) => {
+    res.addStyle('<link rel="stylesheet" href="/css/login.css">');
+    next();
+});
+
 // -- static pages --
 
 // GET / - Display the home page
