@@ -35,7 +35,7 @@ const usernameExists = async (username) => {
  */
 const getAllUsers = async () => {
     const query = `
-        SELECT id, username, email, created_at
+        SELECT id, username, email, created_at, role_name AS "roleName"
         FROM users
         ORDER BY created_at DESC
     `;

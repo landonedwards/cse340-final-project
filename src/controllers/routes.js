@@ -3,7 +3,7 @@ import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout, showDashboard } from './forms/login.js';
 import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe } from './recipes/recipe.js';
-import { processDeleteReview, handleReviewEdit } from './reviews/review.js';
+import { processDeleteReview, handleReviewEdit, processReviewSubmission } from './reviews/review.js';
 import { recipeValidation, reviewValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
 import { requireLogin, requireRole } from '../middleware/auth.js';

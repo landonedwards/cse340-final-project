@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
-import { getReview, saveReview, deleteReview, updateReview } from '../../models/reviews/reviews';
-import { getRecipe } from '../../models/recipes/recipes';
+import { getReview, saveReview, deleteReview, updateReview } from '../../models/reviews/reviews.js';
+import { getRecipe } from '../../models/recipes/recipes.js';
 
 const processReviewSubmission = async (req, res) => {
     const recipeId = parseInt(req.params.recipeId);
@@ -96,7 +96,7 @@ const processDeleteReview = async (req, res) => {
     const reviewId = parseInt(req.params.reviewId);
 
     // confirm review with that ID exists 
-    const targetReview = await getReview(recipeId);
+    const targetReview = await getReview(reviewId);
     if (Object.keys(targetReview).length === 0) {
         req.flash('error', 'Review not found.');
         return res.redirect(`/recipes/${targetReview.recipeId}`);
