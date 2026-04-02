@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { homePage } from './index.js';
 import { showRegistrationForm, showEditAccountForm, showAllUsers, processRegistration, processEditAccount, processDeleteAccount } from './forms/registration.js';
 import { showLoginForm, processLogin, processLogout, showDashboard } from './forms/login.js';
-import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe, processReviewSubmission } from './recipes/recipe.js';
+import { showRecipeForm, handleRecipeSubmission, recipeListPage, recipeDetailPage, recipeManagePage, showEditRecipeForm, handleRecipeEdit, processApproveRecipe, processRejectRecipe, processDeleteRecipe } from './recipes/recipe.js';
+import { processDeleteReview, handleReviewEdit } from './reviews/review.js';
 import { recipeValidation, reviewValidation, registrationValidation, loginValidation, editValidation } from '../middleware/validation/forms.js';
 
 import { requireLogin, requireRole } from '../middleware/auth.js';
@@ -26,7 +27,6 @@ router.post('/register', registrationValidation, processRegistration);
 // -- account management routes -- 
 
 // GET /users/list - Display all registered users
-// FIX THIS: may want to change hardcoded role name
 router.get('/users/list', requireRole('admin'), showAllUsers);
 
 // GET /users/:id/edit - Display edit account form
@@ -84,12 +84,15 @@ router.post('/recipes/:recipeId/approve', requireRole('admin'), processApproveRe
 // POST /recipes/:recipeId/reject - Set approval status to 'Rejected'
 router.post('/recipes/:recipeId/reject', requireRole('admin'), processRejectRecipe);
 
+// -- review routes --
+
 // POST /recipes/:recipeId/reviews - Handles review upload with validation 
 router.post('/recipes/:recipeId/reviews', requireLogin, reviewValidation, processReviewSubmission);
 
-// NEED TO IMPLEMENT THIS CONTROLLER FUNCTION (and /edit)
+// POST /reviews/:reviewId/edit - Handles review edit with validation
+router.post('/reviews/:reviewId/edit', requireLogin, reviewValidation, handleReviewEdit);
 
 // POST /reviews/:reviewId/delete - Delete comment
-// router.post('/reviews/:reviewId/delete', requireLogin, /*processDeleteReview*/);
+router.post('/reviews/:reviewId/delete', requireLogin, processDeleteReview);
 
 export default router;

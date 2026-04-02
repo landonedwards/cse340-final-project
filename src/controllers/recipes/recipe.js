@@ -1,5 +1,5 @@
 import { getRecipe, getAllRecipes, getRecipesByCategory, saveRecipe, updateRecipe, deleteRecipe, updateRecipeStatus, getPendingRecipes, getUserRecipes} from '../../models/recipes/recipes.js';
-import { getReviewsByRecipe, saveReview } from '../../models/reviews/reviews.js';
+import { getReviewsByRecipe } from '../../models/reviews/reviews.js';
 import { getAllCategories } from '../../models/categories/categories.js';
 import { validationResult } from 'express-validator';
 
@@ -51,24 +51,23 @@ const recipeDetailPage = async (req, res, next) => {
     });
 };
 
-const recipeManagePage = async (req, res) => {
-    let recipes = [];
-    
+const recipeManagePage = async (req, res) => {    
     const user = req.session.user;
     const isAdmin = user.roleName == 'admin';
 
+    const recipes = await getUserRecipes(user.id);
+    let pendingRecipes = [];
+
     // if user is admin, grab all recipes awaiting approval
     if (isAdmin) {
-        recipes = await getPendingRecipes();
-    }
-    // otherwise, just grab user's submitted recipes
-    else {
-        recipes = await getUserRecipes(user.id);  
+        pendingRecipes = await getPendingRecipes();
     }
 
     res.render('recipes/manage', {
         title: isAdmin ? 'Pending Recipe Queue' : 'Manage My Recipes',
         recipes: recipes,
+        // passes empty array if not admin
+        pendingRecipes: pendingRecipes,
         // lets view know what data and format to display
         isAdmin: isAdmin
     });
@@ -320,46 +319,6 @@ const processRejectRecipe = async (req, res) => {
     }
 }
 
-const processReviewSubmission = async (req, res) => {
-    const recipeId = parseInt(req.params.recipeId);
-     // check for validation errors
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        // store each validation error as a separate flash message
-        errors.array().forEach(error => {
-            req.flash('error', error.msg);
-        });
-        // redirect back to form without saving
-        return res.redirect(`/recipes/${recipeId}`);
-    }
-
-    // confirm recipe with that ID exists 
-    const targetRecipe = await getRecipe(recipeId);
-    if (Object.keys(targetRecipe).length === 0) {
-        req.flash('error', 'Recipe not found.');
-        return res.redirect('/recipes/manage');
-    }
-
-    // Extract validated data
-    const { rating, comment } = req.body;
-
-    // grab logged-in user's ID
-    const userId = req.session.user.id;
-
-    try {
-        // save to database
-        await saveReview(userId, recipeId, rating, comment);
-        // after successfully saving to the database
-        req.flash('success', 'Success! Your comment was posted!');
-    } catch (error) {
-        console.error('Error uploading review:', error);
-        req.flash('error', 'Unable to upload your comment. Please try again later.');
-    }
-
-    res.redirect(`/recipes/${recipeId}`);
-};
-
 export { recipeListPage, 
          recipeDetailPage, 
          recipeManagePage,
@@ -369,5 +328,4 @@ export { recipeListPage,
          handleRecipeEdit,
          processApproveRecipe,
          processRejectRecipe,
-         processDeleteRecipe,
-         processReviewSubmission };
+         processDeleteRecipe };

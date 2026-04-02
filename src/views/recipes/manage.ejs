@@ -7,11 +7,37 @@
            View all of the recipes that have been submitted by users and are awaiting approval. Approve one to send it to
            the public catalog, or reject it and notify the user. 
         </p>
-    <% } else { %>
-        <p>
-            Manage all of the recipes you've submitted! View, edit, or delete them as needed. 
-        </p>
+
+        <% if (pendingRecipes.length > 0) { %>
+            <div class="pending-recipe-list">
+                <% pendingRecipes.forEach(pendingRecipe => { %>
+                    <div class="recipe-card">
+                        <h3><a href="/recipes/<%= recipe.id %>"><%= recipe.title %></a></h3>
+                        <p class="recipe-metadata">
+                            <%= recipe.authorName %> | Uploaded <%= new Date(recipe.createdAt).toLocaleDateString() %>
+                        </p>
+                        <p class="recipe-description"><%= recipe.description %></p>
+
+                        <div class="recipe-actions">
+                            <form method="POST" action="/recipes/<%= recipe.id %>/approve" style="display: inline;">
+                                <button type="submit" onclick="return confirm('Are you sure you want to approve this recipe?')">Approve</button>
+                            </form>
+
+                            <form method="POST" action="/recipes/<%= recipe.id %>/reject" style="display: inline;">
+                                <button type="submit" onclick="return confirm('Are you sure you want to reject this recipe?')">Reject</button>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <h2>Manage My Recipes</h2>
     <% } %>
+
+    <p>
+        Manage all of the recipes you've submitted! View, edit, or delete them as needed. 
+    </p>
 
     <% if (recipes.length > 0) { %>
         <div class="recipe-list">
@@ -25,21 +51,11 @@
                     <p class="recipe-description"><%= recipe.description %></p>
 
                     <div class="recipe-actions">
-                        <% if (isAdmin) { %>
-                            <form method="POST" action="/recipes/<%= recipe.id %>/approve" style="display: inline;">
-                                <button type="submit" onclick="return confirm('Are you sure you want to approve this recipe?')">Approve</button>
-                            </form>
+                        <a href="/recipes/<%= recipe.id %>/edit">Edit</a>
 
-                            <form method="POST" action="/recipes/<%= recipe.id %>/reject" style="display: inline;">
-                                <button type="submit" onclick="return confirm('Are you sure you want to reject this recipe?')">Reject</button>
-                            </form>
-                        <% } else { %>
-                            <a href="/recipes/<%= recipe.id %>/edit">Edit</a>
-
-                            <form method="POST" action="/recipes/<%= recipe.id %>/delete" style="display: inline;">
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this recipe?')">Delete</button>
-                            </form>
-                        <% } %>
+                        <form method="POST" action="/recipes/<%= recipe.id %>/delete" style="display: inline;">
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this recipe?')">Delete</button>
+                        </form>
                     </div>
                 </div>
             <% }); %>

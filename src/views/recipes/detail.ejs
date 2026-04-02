@@ -5,7 +5,7 @@
         <h1><%= recipe.title %></h1>
         <div class="recipe-metadata">
             <p>Created by: <%= recipe.authorName %></p>
-            <p>Category: <% recipe.categoryName || 'Uncategorized' %></p>
+            <p>Category: <%= recipe.categoryName || 'Uncategorized' %></p>
             <p>Uploaded: <%= new Date(recipe.createdAt).toLocaleDateString() %></p>
         </div>
 
@@ -56,7 +56,7 @@
                 <div class="form-group">
                     <label for="rating">Rating</label>
                     <select id="rating" name="rating">
-                        <option value="" disabled selected>Choose a rating...</option>
+                        <option value="">Choose a rating...</option>
                         <option value="5">★★★★★ (5/5)</option>
                         <option value="4">★★★★☆ (4/5)</option>
                         <option value="3">★★★☆☆ (3/5)</option>
@@ -67,7 +67,7 @@
 
                 <div class="form-group">
                     <label for="comment">Comment<span class="required-input">*</span></label>
-                    <textarea id="comment" name="comment" rows="8" minlength="3" maxlength="1000" placeholder="This just barely edges the Sahara Desert out in terms of moisture." required></textarea>
+                    <textarea id="comment" name="comment" rows="4" minlength="3" maxlength="1000" placeholder="This just barely edges the Sahara Desert out in terms of moisture." required></textarea>
                 </div>
 
                 <button type="submit">Post Comment</button>
@@ -84,19 +84,47 @@
                             <span class="review-author"><%= review.authorName %></span>
                             <span class="review-date"><%= new Date(review.createdAt).toLocaleDateString() %></span>
                         </div>
-                        <span class="star-rating"><%= '★'.repeat(review.rating) %><%= '☆'.repeat(5 - review.rating) %></span>
-                        <p class="review-comment"><%= review.comment %></p>
 
+                        <!-- display mode -->
+                        <div class="review-display" id="display-<%= review.id %>">
+                            <span class="star-rating"><%= '★'.repeat(review.rating) %><%= '☆'.repeat(5 - review.rating) %></span>
+                            <p class="review-comment"><%= review.comment %></p>
+
+                            <% if (locals.isLoggedIn && (user.id === review.userId || user.roleName === 'admin')) { %>
+                                <div class="review-actions">
+                                    <button onclick="showEditForm('<%= review.id %>')">Edit</button>
+                                    <form method="POST" action="/reviews/<%= review.id %>/delete" style="display: inline;">
+                                        <button type="submit" onclick="return confirm('Are you sure you want to permanently delete this review?')">Delete</button>
+                                    </form>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- edit mode (hidden by default)-->
                         <% if (locals.isLoggedIn && (user.id === review.userId || user.roleName === 'admin')) { %>
-                            <div class="review-actions">
-                                <!--THIS LIKELY WON'T BE ITS OWN VIEW; WILL NEED TO CHANGE ROUTE-->
-                                <a href="/reviews/<%= review.id %>/edit">Edit</a>
+                            <form id="edit-<%= review.id %>" method="POST" action="/reviews/<%= review.id %>/edit" style="display: none;">
+                                <div class="form-group-review-edit">
+                                    <label for="rating-<%= review.id %>">Rating</label>
+                                    <select id="rating-<%= review.id %>" name="rating">
+                                        <option value="">Choose a rating...</option>
+                                        <option value="5" <%= review.rating === 5 ? 'selected' : '' %>>★★★★★ (5/5)</option>
+                                        <option value="4" <%= review.rating === 4 ? 'selected' : '' %>>★★★★☆ (4/5)</option>
+                                        <option value="3" <%= review.rating === 3 ? 'selected' : '' %>>★★★☆☆ (3/5)</option>
+                                        <option value="2" <%= review.rating === 2 ? 'selected' : '' %>>★★☆☆☆ (2/5)</option>
+                                        <option value="1" <%= review.rating === 1 ? 'selected' : '' %>>★☆☆☆☆ (1/5)</option>
+                                    </select>
+                                </div>
 
-                                <form method="POST" action="/reviews/<%= review.id %>/delete" style="display: inline;">
-                                    <button type="submit" onclick="return confirm('Are you sure you want to permanently delete this review?')">Delete</button>
-                                </form>
-                            </div>
+                                <div class="form-group-review-edit">
+                                    <label for="comment-<%= review.id %>">Comment</label>
+                                    <textarea id="comment-<%= review.id %>" name="comment" rows="4" minlength="3" maxlength="1000"><%= review.comment %></textarea>
+                                </div>
+
+                                <button type="submit">Save</button>
+                                <button type="button" onclick="hideEditForm('<%= review.id %>')">Cancel</button>
+                            </form>
                         <% } %>
+
                     </li>
                 <% }); %>
             </ul>
@@ -108,6 +136,18 @@
     <div class="navigation">
         <p><a href="/recipes">&larr; Back to Recipe Catalog</a></p>
     </div>
+
+    <script>
+        function showEditForm(reviewId) {
+            document.getElementById('display-' + reviewId).style.display = 'none';
+            document.getElementById('edit-' + reviewId).style.display = 'block';
+        }
+
+        function hideEditForm(reviewId) {
+            document.getElementById('edit-' + reviewId).style.display = 'none';
+            document.getElementById('display-' + reviewId).style.display = 'block';
+        }
+    </script>
 </main>
 
 <%- include('../partials/footer') %>

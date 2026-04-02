@@ -22,7 +22,12 @@
         </div>
 
         <div class="dashboard-actions">
-            <a href="/users/list">Manage Accounts</a>
+            <% if (user.roleName === 'admin') { %>
+                <a href="/users/list">Manage Accounts</a>
+            <% } %>
+            <a href="/users/<%= user.id %>/edit">Edit Account</a>
+            <a href="/recipes/upload">Upload Recipe</a>
+            <a href="/recipes/manage">Manage Recipes</a>
             <a href="/logout" class="logout-button">Logout</a>
         </div>
     </div>
