@@ -32,7 +32,7 @@ router.get('/users/list', requireRole('admin'), showAllUsers);
 // GET /users/:id/edit - Display edit account form
 router.get('/users/:id/edit', requireLogin, showEditAccountForm);
 
-// POST /users/:id/edit - Process account edit
+// POST /users/:id/edit - Process account edit (admins can change user roles as well)
 router.post('/users/:id/edit', requireLogin, editValidation, processEditAccount);
 
 // POST /users/:id/delete - Delete user account
@@ -79,10 +79,10 @@ router.post('/recipes/:recipeId/edit', requireLogin, recipeValidation, handleRec
 router.post('/recipes/:recipeId/delete', requireLogin, processDeleteRecipe);
 
 // POST /recipes/:recipeId/approve - Set approval status to 'Approved'
-router.post('/recipes/:recipeId/approve', requireRole('admin'), processApproveRecipe);
+router.post('/recipes/:recipeId/approve', requireRole('admin', 'moderator'), processApproveRecipe);
 
 // POST /recipes/:recipeId/reject - Set approval status to 'Rejected'
-router.post('/recipes/:recipeId/reject', requireRole('admin'), processRejectRecipe);
+router.post('/recipes/:recipeId/reject', requireRole('admin', 'moderator'), processRejectRecipe);
 
 // -- review routes --
 

@@ -53,23 +53,21 @@ const recipeDetailPage = async (req, res, next) => {
 
 const recipeManagePage = async (req, res) => {    
     const user = req.session.user;
-    const isAdmin = user.roleName == 'admin';
+    const isStaff = user.roleName == 'admin' || user.roleName == 'moderator';
 
     const recipes = await getUserRecipes(user.id);
     let pendingRecipes = [];
 
     // if user is admin, grab all recipes awaiting approval
-    if (isAdmin) {
+    if (isStaff) {
         pendingRecipes = await getPendingRecipes();
     }
 
     res.render('recipes/manage', {
         title: isAdmin ? 'Pending Recipe Queue' : 'Manage My Recipes',
         recipes: recipes,
-        // passes empty array if not admin
+        // passes empty array if not admin/moderator
         pendingRecipes: pendingRecipes,
-        // lets view know what data and format to display
-        isAdmin: isAdmin
     });
 };
 
@@ -225,8 +223,8 @@ const processDeleteRecipe = async (req, res) => {
     }
 
     const currentUser = req.session.user;
-    // check whether user is the author or an admin
-    const canDelete = currentUser.id === targetRecipe.userId || currentUser.roleName === 'admin';
+    // check whether user is the author or an admin/moderator
+    const canDelete = currentUser.id === targetRecipe.userId || currentUser.roleName === 'admin' || currentUser.roleName === 'moderator';
 
     if (!canDelete) {
         req.flash('error', 'You do not have permission to delete this recipe.');
@@ -260,9 +258,9 @@ const processApproveRecipe = async (req, res) => {
     }
 
     const currentUser = req.session.user;
-    const isAdmin = currentUser.roleName === 'admin';
+    const isStaff = currentUser.roleName === 'admin' || currentUser.roleName === 'moderator';
 
-    if (!isAdmin) {
+    if (!isStaff) {
         req.flash('error', 'You do not have permission to approve this recipe.');
         return res.redirect('/recipes/manage');
     }
@@ -295,9 +293,9 @@ const processRejectRecipe = async (req, res) => {
     }
 
     const currentUser = req.session.user;
-    const isAdmin = currentUser.roleName === 'admin';
+    const isStaff = currentUser.roleName === 'admin' || currentUser.roleName === 'moderator';
 
-    if (!isAdmin) {
+    if (!isStaff) {
         req.flash('error', 'You do not have permission to reject this recipe.');
         return res.redirect('/recipes/manage');
     }

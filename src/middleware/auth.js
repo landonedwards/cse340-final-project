@@ -19,10 +19,11 @@ const requireLogin = (req, res, next) => {
  * Middleware factory to require specific role for route access
  * Returns middleware that checks if user has the required role
  * 
- * @param {string} roleName - The role name required (e.g., 'admin', 'user')
+ * @param {string} allowedRoles - The role names required (e.g., 'admin', 'moderator'). 
+ * The '...' in front of allowedRoles bundles the values passed into an array.
  * @returns {Function} Express middleware function
  */
-const requireRole = (roleName) => {
+const requireRoles = (...allowedRoles) => {
     return (req, res, next) => {
         // check if user is logged in first
         if (!req.session || !req.session.user) {
@@ -31,14 +32,14 @@ const requireRole = (roleName) => {
         }
 
         // check if user's role matches the required role
-        if (req.session.user.roleName !== roleName) {
+        if (!allowedRoles.includes(req.session.user.roleName)) {
             req.flash('error', 'You do not have permission to access this page.');
             return res.redirect('/');
         }
 
-        // user has required role, continue
+        // user has a required role, continue
         next();
     };
 };
 
-export { requireLogin, requireRole };
+export { requireLogin, requireRoles };

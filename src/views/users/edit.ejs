@@ -14,6 +14,17 @@
             <input type="email" id="email" name="email" value="<%= user.email %>" required>
         </div>
 
+        <% if (res.locals.isAdmin) { %> 
+            <div>
+                <label for="role">User Role:</label>
+                <select id="role" name="role">
+                    <option value="user" <%= user.roleName === 'user' ? 'selected' : '' %>>User</option>
+                    <option value="moderator" <%= user.roleName === 'moderator' ? 'selected' : '' %>>Moderator</option>
+                    <option value="admin" <%= user.roleName === 'admin' ? 'selected' : '' %>>Admin</option>
+                </select>
+            </div>
+        <% } %>
+
         <button type="submit">Update Account</button>
         <a href="/users/list">Cancel</a>
     </form>

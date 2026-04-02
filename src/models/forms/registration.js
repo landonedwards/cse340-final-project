@@ -109,10 +109,25 @@ const deleteUser = async (id) => {
     return result.rowCount > 0;
 };
 
+/**
+ * Change a user's role
+ */
+const updateUserRole = async (userId, role) => {
+    const query = `
+    UPDATE users
+    SET role_id = (SELECT id FROM roles WHERE role_name = $1)
+    WHERE id = $2
+    `;
+    
+    const result = await db.query(query, [role, userId]);
+    return result.rowCount > 0;
+}
+
 export { emailExists,
          usernameExists, 
          saveUser, 
          getAllUsers,
          getUserById,
          updateUser,
-         deleteUser };
+         deleteUser,
+         updateUserRole };

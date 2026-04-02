@@ -13,9 +13,11 @@
                 const canEdit = currentUser && (currentUser.id === listUser.id || currentUser.roleName === 'admin');
                 const canDelete = currentUser && currentUser.roleName === 'admin' && currentUser.id !== listUser.id;
             %>
+            
             <div class="user-card">
                 <h3><%= listUser.username %></h3>
                 <p><%= listUser.email %></p>
+                <p><%= listUser.roleName %></p>
 
                 <% if (canEdit || canDelete) { %>
                     <div class="user-actions">

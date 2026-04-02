@@ -6,7 +6,8 @@ import { emailExists,
          getAllUsers,
          getUserById,
          updateUser,
-         deleteUser } from '../../models/forms/registration.js';
+         deleteUser, 
+         updateUserRole} from '../../models/forms/registration.js';
 
 /**
  * Display the registration form page.
@@ -137,7 +138,7 @@ const processEditAccount = async (req, res) => {
 
     const targetUserId = parseInt(req.params.id);
     const currentUser = req.session.user;
-    const { username, email } = req.body;
+    const { username, email, role } = req.body;
 
     try {
         const targetUser = await getUserById(targetUserId);
@@ -171,6 +172,15 @@ const processEditAccount = async (req, res) => {
 
         // update the user
         await updateUser(targetUserId, username, email);
+
+        if (role && currentUser.roleName === 'admin') {
+            // prevent admins from locking themselves out (role refers to the new role value)
+            if (currentUser.id === targetUserId && role !== 'admin') {
+                req.flash('error', 'You cannot change your own admin status.');
+            } else {
+                await updateUserRole(targetUserId, role);
+            }
+        }
 
         // if user edited their own account, update session
         if (currentUser.id === targetUserId) {

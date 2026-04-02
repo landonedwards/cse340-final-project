@@ -61,8 +61,6 @@ const reviewValidation = [
         .trim()
         .isLength({ min: 3, max: 1000 })
         .withMessage('Comment must be between 3 and 1000 characters.')
-        // converts HTML tags into safe string characters to prevent XSS attacks
-        .escape()
 ];
 
 // validation rules for user registration
@@ -117,7 +115,13 @@ const editValidation = [
         .normalizeEmail()
         .withMessage('Must be a valid email address')
         .isLength({ max: 255 })
-        .withMessage('Email address is too long')
+        .withMessage('Email address is too long'),
+    body('role')
+        // normal users/moderators cannot change role
+        .optional({ checkFalsy: true })
+        .trim()
+        .isIn(['user', 'moderator', 'admin'])
+        .withMessage('Please select a valid user role.')
 ];
 
 // validation rules for login form

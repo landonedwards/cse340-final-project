@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 INSERT INTO roles (role_name, role_description) 
 VALUES 
     ('user', 'Standard user with basic access'),
+    ('moderator', 'A user with elevated access to edit recipes, delete inappropriate reviews, and approve/reject new recipes'),
     ('admin', 'Administrator with full system access')
 ON CONFLICT (role_name) DO NOTHING;
 

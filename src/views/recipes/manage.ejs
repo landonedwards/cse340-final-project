@@ -2,7 +2,7 @@
 
 <main>
     <h1><%= title %></h1>
-    <% if (isAdmin) { %>
+    <% if (res.locals.isStaff) { %>
         <p>
            View all of the recipes that have been submitted by users and are awaiting approval. Approve one to send it to
            the public catalog, or reject it and notify the user. 

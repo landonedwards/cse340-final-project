@@ -11,6 +11,11 @@ export const addLocalVariables = (req, res, next) => {
     if (req.session && req.session.user) {
         res.locals.isLoggedIn = true;
     }
+
+    res.locals.isAdmin = req.session.user && req.session.user.roleName === 'admin';
+    res.locals.isModerator = req.session.user && req.session.user.roleName === 'moderator';
+    // for tasks both admins and moderators can do
+    res.locals.isStaff = res.locals.isAdmin || res.locals.isModerator;
     
     next();
 };

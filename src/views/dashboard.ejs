@@ -22,7 +22,7 @@
         </div>
 
         <div class="dashboard-actions">
-            <% if (user.roleName === 'admin') { %>
+            <% if (res.locals.isAdmin) { %>
                 <a href="/users/list">Manage Accounts</a>
             <% } %>
             <a href="/users/<%= user.id %>/edit">Edit Account</a>
