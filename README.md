@@ -19,7 +19,8 @@ My application acts as a platform where anyone can upload, view, and comment on 
 ## Known Limitations
 - Admins cannot add new or edit the list of recipe categories to select from.
 - The average rating of recipes is not displayed (there is a getRecipeAverageRating controller function in models/reviews/reviews.js but it isn't used anywhere).
-- There is a recipe images table, but it is not utilized. Additionally, there is no functionality to add/modify images for recipes. 
+- There is a recipe images table, but it is not utilized. Additionally, there is no functionality to add/modify images for recipes.
+- Login isn't working on Render currently (FIX THIS AS SOON AS POSSIBLE)
 - The application lacks styling/UI polish. 
  
 ### Deployment URL
