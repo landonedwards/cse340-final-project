@@ -20,6 +20,9 @@ const PORT = process.env.PORT || 3000;
 // setup express server
 const app = express();
 
+// lets express know it's sitting behind a proxy (Render)
+app.set('trust proxy', 1);
+
 // configure session middleware
 
 // initialize PostgreSQL session store
