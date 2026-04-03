@@ -36,7 +36,12 @@ const pool = new Pool({
         ca: caCert,  // Use the certificate content, not the file path
         rejectUnauthorized: true,  // Keep this true for proper security
         checkServerIdentity: () => { return undefined; }  // Skip hostname verification but keep cert chain validation
-    }
+    },
+    // sets max number of simultanous PostgreSQL connections
+    max: 4,
+    // if a connection sits unused for 5 seconds, close it
+    idleTimeoutMillis: 5000,
+    connectionTimeoutMillis: 2000
 });
 
 /**

@@ -26,7 +26,11 @@
         <% } %>
 
         <button type="submit">Update Account</button>
-        <a href="/users/list">Cancel</a>
+        <% if (locals.isAdmin) { %>
+            <a href="/users/list">Cancel</a>
+        <% } else { %>
+            <a href="/dashboard">Cancel</a>
+        <% } %>
     </form>
 </main>
 
