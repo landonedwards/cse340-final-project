@@ -35,10 +35,15 @@ const usernameExists = async (username) => {
  */
 const getAllUsers = async () => {
     const query = `
-        SELECT id, username, email, created_at, role_name AS "roleName"
-        FROM users
-        INNER JOIN roles ON users.role_id = roles.id
-        ORDER BY created_at DESC
+        SELECT 
+            u.id, 
+            u.username, 
+            u.email, 
+            u.created_at, 
+            r.role_name AS "roleName"
+        FROM users AS u
+        INNER JOIN roles AS r ON u.role_id = r.id
+        ORDER BY u.created_at DESC
     `;
     const result = await db.query(query);
     return result.rows;
