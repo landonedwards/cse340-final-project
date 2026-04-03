@@ -2,7 +2,7 @@
 My application acts as a platform where anyone can upload, view, and comment on others' recipes. It is for people who enjoy finding and sharing recipes. 
 
 ## Database Schema
-![ERD](<img width="550" height="852" alt="cse340 final erd" src="https://github.com/user-attachments/assets/735c43d5-471c-453e-a65c-1f1ed18e135e" />)
+![ERD](https://github.com/user-attachments/assets/735c43d5-471c-453e-a65c-1f1ed18e135e")
 
 ## User Roles
 - **Admin**: Administrator with full system access.
